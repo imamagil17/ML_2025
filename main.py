@@ -15,19 +15,23 @@ label_region = {
     'D': 'Bandung'
 }
 
-# Plat yang diizinkan
+# Prefix yang diizinkan
 allowed_prefixes = set(label_map.keys())
 
-# Ekstrak dua huruf awal sebagai fitur
+# Ekstrak dua huruf awal sebagai fitur numerik
 def extract_features(plat):
     plat = plat.strip().upper()
     prefix = re.match(r'^[A-Z]{1,2}', plat)
     if not prefix:
         return [-1, -1]
     prefix = prefix.group().rjust(2)
-    return [ord(prefix[0]) - ord('A'), ord(prefix[1]) - ord('A')]
+    base = [ord(prefix[0]) - ord('A'), ord(prefix[1]) - ord('A')]
 
-# Cek apakah prefix valid
+    # Tambahkan noise kecil agar ada variasi antar data
+    noise = [random.choice([-1, 0, 1]), random.choice([-1, 0, 1])]
+    return [base[0] + noise[0], base[1] + noise[1]]
+
+# Validasi prefix input manual
 def is_valid_prefix(plat):
     plat = plat.strip().upper()
     match = re.match(r'^[A-Z]{1,2}', plat)
@@ -52,15 +56,23 @@ def load_data_from_csv(filename):
             y.append(label_map[row['label']])
     return np.array(X), np.array(y)
 
-# Bagi data
+# Split data lebih adil (per kelas)
 def split_data(X, y, test_ratio=0.2):
-    total = len(X)
-    idx = list(range(total))
-    random.shuffle(idx)
-    split = int(total * (1 - test_ratio))
-    return X[idx[:split]], y[idx[:split]], X[idx[split:]], y[idx[split:]]
+    X_train, X_test, y_train, y_test = [], [], [], []
+    for label in np.unique(y):
+        idx = np.where(y == label)[0]
+        random.shuffle(idx)
+        split = int(len(idx) * (1 - test_ratio))
+        train_idx, test_idx = idx[:split], idx[split:]
+        for i in train_idx:
+            X_train.append(X[i])
+            y_train.append(y[i])
+        for i in test_idx:
+            X_test.append(X[i])
+            y_test.append(y[i])
+    return np.array(X_train), np.array(y_train), np.array(X_test), np.array(y_test)
 
-# KNN sederhana
+# KNN manual
 def predict_knn(X_train, y_train, x_input, k=3):
     distances = np.linalg.norm(X_train - x_input, axis=1)
     k_idx = distances.argsort()[:k]
@@ -77,7 +89,7 @@ def evaluate(X_train, y_train, X_test, y_test):
     acc = correct / len(y_test)
     print(f"\nAkurasi model terhadap data uji: {acc * 100:.2f}%")
 
-# Input manual
+# Input manual oleh user
 def manual_test(X_train, y_train):
     while True:
         plat = input("\nMasukkan plat nomor (atau ketik 'exit'): ").strip().upper()
