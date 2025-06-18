@@ -1,6 +1,7 @@
+# Imam Agil Aiman - F55123066 - Teknik Informatika B
 # Plat Nomor Classifier - Machine Learning UAS 2025
 
-## 📌 Deskripsi Proyek
+## Deskripsi Proyek
 Aplikasi sederhana untuk mengenali asal daerah kendaraan berdasarkan awalan plat nomor. Model ini mengenali 4 kelas:
 - **DN** → Sulawesi Tengah  
 - **DD** → Sulawesi Selatan  
@@ -11,7 +12,7 @@ Data dummy digunakan dengan minimal **100 data per kelas**. Aplikasi ini **tidak
 
 ---
 
-## 🧠 Metode
+## Metode
 Model dibuat menggunakan algoritma **K-Nearest Neighbors (KNN)** dari nol, tanpa bantuan library eksternal.
 
 Langkah-langkah:
@@ -22,7 +23,7 @@ Langkah-langkah:
 
 ---
 
-## 🗃️ Struktur File
+## Struktur File
 
 ├── dataset_manual.csv # Dataset dummy (400+ data, 4 kelas)
 
@@ -33,7 +34,7 @@ Langkah-langkah:
 
 ---
 
-## ▶️ Cara Menjalankan
+## Cara Menjalankan
 
 1. Pastikan Python 3.x dan NumPy sudah terinstal.
 2. Jalankan program dengan:
